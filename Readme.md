@@ -12,7 +12,6 @@
 1. 비동기 I/O: NGINX는 이벤트가 발생할 때까지 기다린 후 해당 이벤트에 반응하여 작업을 수행한다. 예를 들어, 클라이언트 연결 요청이 있을 때 이를 감지하고 적절한 동작을 수행한다.
 
 ```c
-cCopy code
 // pseudo code
 while (true) {
     event = wait_for_event();
@@ -22,7 +21,6 @@ while (true) {
 ```
 2. 이벤트 드리븐: 연결 요청, 데이터 수신 등 다양한 이벤트가 발생하면 이에 해당하는 핸들러 함수를 실행한다. 이를 통해 특정 이벤트가 발생했을 때만 처리를 수행하므로 불필요한 리소스 낭비가 줄어든다.
 ```c
-cCopy code
 // pseudo code
 function handle_event(event) {
     switch(event.type) {
@@ -52,7 +50,6 @@ function handle_event(event) {
 1. **요청 수신**: 클라이언트로부터의 요청이 NGINX에 도착하면, 요청된 리소스의 경로를 확인한다.
 
     ```c
-    cCopy code
     // pseudo code
     request_path = get_request_path(client_request);
     
@@ -61,7 +58,6 @@ function handle_event(event) {
 2. **메모리 캐시 확인**: NGINX는 해당 리소스가 이전에 요청되어 메모리 캐시에 존재하는지 먼저 확인한다.
 
     ```c
-    cCopy code
     // pseudo code
     if (is_in_memory_cache(request_path)) {
         respond_with_cached_content(client_request);
@@ -73,7 +69,6 @@ function handle_event(event) {
 3. **디스크에서 리소스 읽기**: 메모리 캐시에 해당 리소스가 없을 경우, NGINX는 디스크에서 해당 파일을 읽어들인다. 이 과정은 비동기 방식으로 수행되어, 디스크 I/O 동작 중에 다른 연결 요청을 계속 처리할 수 있다.
 
     ```c
-    cCopy code
     // pseudo code
     file_content = async_read_from_disk(request_path);
     
@@ -82,7 +77,6 @@ function handle_event(event) {
 4. **응답 전송 및 캐싱**: 파일이 성공적으로 읽혀지면, 클라이언트에게 해당 내용을 전송한다. 동시에, 메모리 캐시에 해당 내용을 저장하여 이후의 동일한 요청에 빠르게 응답할 수 있게 한다.
 
     ```c
-    cCopy code
     // pseudo code
     respond_to_client(client_request, file_content);
     cache_to_memory(request_path, file_content);
@@ -109,7 +103,6 @@ function handle_event(event) {
 1. **요청 수신**: 클라이언트로부터의 요청이 NGINX에 도착합니다.
 
     ```c
-    cCopy code
     // pseudo code
     client_request = get_client_request();
     
@@ -118,7 +111,6 @@ function handle_event(event) {
 2. **백엔드 서버 선택**: NGINX는 설정된 로드 밸런싱 알고리즘(예: 라운드 로빈, 가중치 기반)을 사용하여 어떤 백엔드 서버에 요청을 전달할지 결정합니다.
 
     ```c
-    cCopy code
     // pseudo code
     backend_server = select_backend_server(load_balancing_algorithm);
     
@@ -127,7 +119,6 @@ function handle_event(event) {
 3. **요청 전달**: 결정된 백엔드 서버로 클라이언트의 요청을 전달합니다.
 
     ```c
-    cCopy code
     // pseudo code
     backend_response = forward_to_backend(client_request, backend_server);
     
@@ -136,7 +127,6 @@ function handle_event(event) {
 4. **응답 수신 및 전송**: 백엔드 서버로부터 응답을 받으면, 필요한 처리(예: 헤더 수정, 캐싱 등)를 한 후 클라이언트에게 전송합니다.
 
     ```c
-    cCopy code
     // pseudo code
     process_backend_response(backend_response);
     respond_to_client(client_request, backend_response);
@@ -161,7 +151,6 @@ function handle_event(event) {
 
 
 ```c
-cCopy code
 // pseudo code
 while (true) { // 이벤트 루프
     event = await get_next_event(); // 이벤트 대기 (비동기)
@@ -179,7 +168,6 @@ while (true) { // 이벤트 루프
 - NGINX의 설정 파일은 모듈화된 구조로 되어 있습니다. 이를 통해 다양한 모듈과 설정을 조합하여 원하는 기능을 구성할 수 있습니다.
 
 ```c
-cCopy code
 // pseudo code
 load_module("http_module");
 load_module("ssl_module");
@@ -196,7 +184,6 @@ set_configuration("server_name", "example.com");
 - NGINX는 정적 리소스 처리 최적화, 효율적인 리버스 프록시 메커니즘, 캐싱 기능 등을 통해 빠른 응답 시간을 제공합니다.
 
 ```c
-cCopy code
 // pseudo code
 if (is_static_resource(request)) {
     respond_with_optimized_static_delivery(request);
@@ -215,7 +202,6 @@ if (is_static_resource(request)) {
 - NGINX는 요청 처리 중 오류가 발생할 경우, 해당 요청만 실패하게 하고 전체 서버는 계속 작동하도록 설계되어 있습니다. 이는 견고한 오류 처리 메커니즘 덕분입니다.
 
 ```c
-cCopy code
 // pseudo code
 try {
     handle_request(request);
